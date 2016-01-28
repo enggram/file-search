@@ -1,3 +1,9 @@
 search_keyword:
     path: /search
     defaults: { _controller: AppBundle:Default:search }
+
+search_result_json:
+    path: /result-json
+    defaults: { _controller: AppBundle:Default:getResultJson }
+    options:
+        expose: true

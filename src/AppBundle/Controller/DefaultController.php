@@ -15,37 +15,74 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        // replace this example code with whatever you need
-        return $this->render('AppBundle::layout.html.twig', [
-            'base_dir' => realpath($this->container->getParameter('kernel.root_dir').'/..'),
-        ]);
+        return $this->render('AppBundle::layout.html.twig', array('resultArray' => ''));
     }
 
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function searchAction(Request $request)
     {
+        $resultArray = array();
         $data = $request->request->all();
         if ($request->getMethod() == 'POST') {
-            $keyword = $data['search_keyword'];
-            $filePath = (__DIR__).'/../files';
-            $finder = new Finder();
-
-            $finderObj = $finder->in($filePath)->files();
-
-            $data = $finderObj->name($keyword.'*');
-
-            if ($data->count() == 0) {
-                $finder = new Finder();
-                $finderObj = $finder->in($filePath)->files();
-                $data = $finderObj->contains($keyword);
-            }else{
-                $data = $finderObj->contains($keyword);
-            }
-
-            foreach ($data as $file) {
-                echo $file->getRealpath() . PHP_EOL;
-            }
+            $keyword = preg_replace('/^([^(]*).*$/', '$1', $data['search_keyword']);
+            $resultArray = $this->resultJsonData($keyword,true);
         }
-        return new JsonResponse("Success");
+        return $this->render('AppBundle::layout.html.twig', array('resultArray' => $resultArray));
+    }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * Ajax call action
+     */
+    public function getResultJsonAction(Request $request)
+    {
+        $keyword = $request->get('keyword');
+        $resultData = $this->resultJsonData($keyword);
+        return new JsonResponse($resultData);
+    }
+
+    /**
+     * @param $keyword
+     * @param bool|false $ext
+     * @return array
+     * Finder object and getting results for file and file contents
+     */
+    public function resultJsonData($keyword,$ext=false)
+    {
+        $resultArray = array();
+        $filePath = (__DIR__).'/../files';
+        $nameSearch = new Finder();
+        $contentSearch = new Finder();
+
+        $nameFinderObj = $nameSearch->in($filePath)->files();
+
+        $nameFinderObj->name($keyword.'*');
+
+        $contentFinderObj = $contentSearch->in($filePath)->files();
+        $contentFinderObj->contains($keyword);
+
+
+        foreach ($nameFinderObj as $file) {
+            $filename = preg_replace('/^([^.]*).*$/', '$1', $file->getFileName());
+            $resultArray[] = array('keyword' => $keyword, 'filename' => 'filename: '.$filename);
+        }
+        /**
+         * Find the string in the file content
+         */
+        foreach ($contentFinderObj as $file) {
+            $contents = $file->getContents();
+            preg_match('/\w*'.$keyword.'\w*/', $contents, $matches);
+            $filename = $file->getFileName();
+            if(!$ext){
+                $filename = preg_replace('/^([^.]*).*$/', '$1', $file->getFileName());
+            }
+            $resultArray[] = array('keyword' => $matches[0], 'filename' => 'filename: '.$filename);
+        }
+
+        return $resultArray;
     }
 }
