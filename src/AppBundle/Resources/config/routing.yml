@@ -1,0 +1,3 @@
+search_keyword:
+    path: /search
+    defaults: { _controller: AppBundle:Default:search }

@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="{{ asset('bundles/app/css/bootstrap.min.css')}}" rel="stylesheet" >
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/app/js/jquery.min.js')}}"></script>
+    <script src="{{ asset('bundles/app/js/bootstrap.min.js')}}"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row" style="margin-top: 100px;">
+        <div class="col-md-12">
+            <form name="search" action="{{ path("search_keyword") }}" method="post">
+                <div class="form-group">
+                    <label for="searchInput">Search Keyword</label>
+                    <input type="text" class="form-control" data-provide="typeahead" data-items="4" name="search_keyword" id="searchInput" placeholder="Keyword">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

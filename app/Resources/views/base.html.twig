@@ -1,0 +1,39 @@
+{% spaceless %}
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+
+        {% block meta %}
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% endblock %}
+
+        {% block stylesheets %}
+
+        {% endblock %}
+
+        {% block javascripts %}
+
+        {% endblock %}
+    </head>
+    <body>
+        <div class="container">
+
+            {% block header %}
+
+            {% endblock %}
+
+
+            {% block body %}
+
+            {% endblock %}
+
+
+            {% block footer %}
+            {% endblock %}
+        </div>
+
+    </body>
+    </html>
+{% endspaceless %}
